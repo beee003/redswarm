@@ -11,6 +11,10 @@
   <a href="#why">Why</a>
 </p>
 
+<p align="center">
+  <img src="demo.gif" alt="RedSwarm visualization — agents swarming your codebase" width="800">
+</p>
+
 ---
 
 **RedSwarm** spawns hundreds of adversarial AI agents that simulate real-world attacks against your codebase. Supply chain attacks, credential theft, prompt injection, insider threats, data exfiltration — all in one scan.
