@@ -1093,6 +1093,79 @@ def _levenshtein(s1: str, s2: str) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _open_visualization(intel: dict, result: ScanResult):
+    """Generate visualization HTML with real scan data and open in browser."""
+    import webbrowser
+
+    # Build file nodes with import relationships
+    files_data = []
+    for f in intel.get("files", []):
+        content = f.get("content", "")
+        imports = []
+        # Extract Python imports
+        for match in re.finditer(r"^(?:from|import)\s+(\w+)", content, re.MULTILINE):
+            mod = match.group(1)
+            # Check if it maps to a local file
+            for other in intel.get("files", []):
+                other_name = other["path"].replace(".py", "").replace("/", ".")
+                if mod == other_name or mod == other["path"].replace(".py", ""):
+                    imports.append(other["path"])
+        files_data.append(
+            {
+                "id": f["path"],
+                "label": f["path"].split("/")[-1],
+                "loc": f.get("size", 100) // 3,  # rough LOC estimate
+                "imports": imports,
+            }
+        )
+
+    # Build findings with staggered discovery times
+    sev_order = {"low": 0, "medium": 1, "high": 2, "critical": 3}
+    sorted_f = sorted(result.findings, key=lambda f: sev_order.get(f.severity, 0))
+    findings_data = []
+    for i, f in enumerate(sorted_f):
+        findings_data.append(
+            {
+                "file": f.file_path,
+                "severity": f.severity,
+                "title": f.title[:60],
+                "discovered_at": 4.0 + i * 1.8,
+            }
+        )
+
+    viz_data = json.dumps(
+        {
+            "files": files_data,
+            "findings": findings_data,
+            "totalAgents": result.total_agents,
+            "riskScore": result.risk_score,
+        }
+    )
+
+    # Read the visualization template
+    viz_template = Path(__file__).parent / "visualize.html"
+    if not viz_template.exists():
+        logger.warning("visualize.html not found — skipping visualization")
+        return
+
+    html = viz_template.read_text()
+    # Inject real data
+    html = html.replace(
+        "const DATA = window.REDSWARM_DATA || {",
+        f"const DATA = window.REDSWARM_DATA || {viz_data}; const _UNUSED = {{",
+    )
+
+    # Write to temp file and open
+    import tempfile
+
+    with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as tmp:
+        tmp.write(html)
+        tmp_path = tmp.name
+
+    logger.info("Visualization: %s", tmp_path)
+    webbrowser.open(f"file://{tmp_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="RedSwarm — Adversarial AI swarm security scanner",
@@ -1125,6 +1198,12 @@ Examples:
         help="Focus on specific attack type",
     )
     parser.add_argument("--json", action="store_true", help="Output as JSON")
+    parser.add_argument(
+        "--visualize",
+        "-v",
+        action="store_true",
+        help="Open real-time swarm attack visualization in browser",
+    )
     args = parser.parse_args()
 
     project_path = Path(args.project).resolve()
@@ -1187,6 +1266,9 @@ Examples:
         html = generate_html_report(result)
         Path(args.output).write_text(html)
         logger.info("HTML report saved to %s", args.output)
+
+    if args.visualize:
+        _open_visualization(intel, result)
 
     sys.exit(1 if result.critical > 0 else 0)
 
