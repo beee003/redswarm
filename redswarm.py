@@ -742,26 +742,140 @@ AGENT_TYPES = [
 ]
 
 
-def run_swarm(intel: dict, num_agents: int = 100) -> list[Finding]:
+def run_swarm(intel: dict, num_agents: int = 100, quiet: bool = False) -> list[Finding]:
     """Spawn and run attacker agents against project intelligence."""
+    import random
+
     all_findings = []
     agents_per_type = max(num_agents // len(AGENT_TYPES), 1)
+    total_agents = agents_per_type * len(AGENT_TYPES)
+    agent_counter = 0
+    live_findings: list[Finding] = []
+
+    # Collect file paths for realistic probing messages
+    file_paths = [f["path"] for f in intel.get("files", [])]
+    dep_names = [d["name"] for d in intel.get("dependencies", [])]
+    endpoint_paths = [e["path"] for e in intel.get("api_endpoints", [])]
+
+    # Probing messages per agent type
+    probe_messages = {
+        "supply-chain": [
+            "checking PyPI advisories for {dep}",
+            "comparing {dep} hash against known-compromised list",
+            "scanning {dep} install hooks",
+            "testing typosquat distance for {dep}",
+            "verifying {dep} version pinning",
+            "checking {dep} maintainer history",
+            "analyzing {dep} download spike patterns",
+        ],
+        "credential-theft": [
+            "scanning {file} for hardcoded secrets",
+            "pattern-matching API keys in {file}",
+            "checking env fallback defaults in {file}",
+            "hunting JWT tokens in {file}",
+            "searching {file} for connection strings",
+            "testing {file} for private key material",
+            "checking .gitignore coverage for secrets",
+        ],
+        "prompt-injection": [
+            "tracing user input flow into {file}",
+            "testing LLM call boundary at {file}",
+            "checking prompt sanitization in {file}",
+            "analyzing system prompt exposure in {file}",
+            "probing chat completion call in {file}",
+            "testing f-string injection surface in {file}",
+        ],
+        "insider-threat": [
+            "probing {endpoint} for auth bypass",
+            "checking {file} for debug flags",
+            "testing {file} for test credentials",
+            "scanning {file} for admin backdoors",
+            "checking CORS policy in {file}",
+            "testing {endpoint} authorization",
+        ],
+        "exfiltration": [
+            "mapping outbound calls in {file}",
+            "checking {file} for data exfil endpoints",
+            "testing DNS exfiltration vectors in {file}",
+            "auditing HTTP calls in {file}",
+            "checking {file} for webhook URLs",
+            "tracing data flow to external services in {file}",
+        ],
+    }
+
+    severity_sym = {
+        "critical": "\033[91m\033[1m[!!!] CRITICAL",
+        "high": "\033[93m[!!] HIGH",
+        "medium": "\033[33m[!] MEDIUM",
+        "low": "\033[90m[.] LOW",
+    }
+
+    def _pick_probe(agent_type: str) -> str:
+        """Generate a realistic probing message."""
+        templates = probe_messages.get(agent_type, ["scanning {file}"])
+        tmpl = random.choice(templates)
+        ctx = {
+            "file": random.choice(file_paths) if file_paths else "source",
+            "dep": random.choice(dep_names) if dep_names else "package",
+            "endpoint": random.choice(endpoint_paths) if endpoint_paths else "/api",
+        }
+        return tmpl.format(**ctx)
+
+    # Simulate swarm with live output
+    if not quiet:
+        sys.stderr.write(
+            f"\033[31m[swarm]\033[0m Initializing {total_agents} adversarial agents...\n"
+        )
+        sys.stderr.flush()
+        time.sleep(0.3)
 
     for i, agent_cls in enumerate(AGENT_TYPES):
         type_name = agent_cls.agent_type
-        logger.info(
-            "\033[31m[swarm]\033[0m Deploying %d %s agents...",
-            agents_per_type,
-            type_name,
-        )
+        type_label = type_name.upper().replace("-", " ")
+
+        if not quiet:
+            sys.stderr.write(
+                f"\n\033[31m[swarm]\033[0m \033[1mDeploying {agents_per_type} {type_label} agents\033[0m\n"
+            )
+            sys.stderr.flush()
+            time.sleep(0.15)
+
         for j in range(agents_per_type):
             agent_id = i * agents_per_type + j
+            agent_counter += 1
             agent = agent_cls(agent_id)
+
+            # Show probing activity (not every agent, ~30% for readability)
+            if not quiet and (j < 3 or random.random() < 0.15):
+                probe = _pick_probe(type_name)
+                sys.stderr.write(f"\033[90m  agent #{agent_id:>3} → {probe}\033[0m\n")
+                sys.stderr.flush()
+                time.sleep(random.uniform(0.02, 0.06))
+
             try:
                 findings = agent.attack(intel)
+                # Print findings as they're discovered (first agent only, dedup later)
+                for f in findings:
+                    key = f"{f.title}|{f.file_path}|{f.line_number}"
+                    if not quiet and key not in {
+                        f"{lf.title}|{lf.file_path}|{lf.line_number}"
+                        for lf in live_findings
+                    }:
+                        sev = severity_sym.get(f.severity, "[?]")
+                        sys.stderr.write(f"  {sev}: {f.title}\033[0m\n")
+                        sys.stderr.flush()
+                        live_findings.append(f)
+                        time.sleep(random.uniform(0.03, 0.08))
                 all_findings.extend(findings)
             except Exception as e:
                 logger.debug("Agent %d (%s) failed: %s", agent_id, type_name, e)
+
+    if not quiet:
+        sys.stderr.write(
+            f"\n\033[31m[swarm]\033[0m All {total_agents} agents reported back.\n"
+        )
+        sys.stderr.flush()
+        time.sleep(0.2)
 
     # Deduplicate findings by title + file
     seen = set()
@@ -1031,10 +1145,7 @@ Examples:
     intel = scanner.scan()
 
     # Phase 2: Attack
-    logger.info(
-        "\033[31m[swarm]\033[0m Deploying %d adversarial agents...", args.agents
-    )
-    findings = run_swarm(intel, num_agents=args.agents)
+    findings = run_swarm(intel, num_agents=args.agents, quiet=args.json)
 
     scan_time = time.time() - t0
 
