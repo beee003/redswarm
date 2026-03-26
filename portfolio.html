@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya Walcher — Builder</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'Inter', system-ui, sans-serif;
+  background: #09090b;
+  color: #e4e4e7;
+  line-height: 1.6;
+}
+a { color: #818cf8; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { max-width: 720px; margin: 0 auto; padding: 60px 24px 80px; }
+
+/* Header */
+.header { margin-bottom: 48px; }
+.name {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.tagline {
+  font-size: 18px;
+  color: #a1a1aa;
+  margin-bottom: 16px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.chip {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+.links {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+/* Stats bar */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: #27272a;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 48px;
+  border: 1px solid #27272a;
+}
+.stat {
+  background: #18181b;
+  padding: 16px;
+  text-align: center;
+}
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+.stat-label {
+  font-size: 11px;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Section */
+.section {
+  margin-bottom: 48px;
+}
+.section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #52525b;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #27272a;
+}
+
+/* Project cards */
+.project {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.project:hover { border-color: #3f3f46; }
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.project-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+.project-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.badge-live { background: rgba(34,197,94,0.1); color: #22c55e; }
+.badge-new { background: rgba(129,140,248,0.1); color: #818cf8; }
+.badge-oss { background: rgba(249,115,22,0.1); color: #f97316; }
+.project-desc {
+  font-size: 14px;
+  color: #a1a1aa;
+  margin-bottom: 12px;
+}
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tech-tag {
+  font-size: 11px;
+  background: #0a0a0a;
+  border: 1px solid #27272a;
+  border-radius: 4px;
+  padding: 2px 8px;
+  color: #71717a;
+}
+.project-metrics {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #52525b;
+}
+.metric-val { color: #a1a1aa; font-weight: 600; }
+
+/* Timeline */
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.timeline-date {
+  font-size: 13px;
+  color: #52525b;
+  min-width: 80px;
+  text-align: right;
+  padding-top: 2px;
+}
+.timeline-content {
+  font-size: 14px;
+  color: #a1a1aa;
+}
+.timeline-content strong { color: #e4e4e7; }
+
+/* CTA */
+.cta {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid #27272a;
+  margin-top: 48px;
+}
+.cta-text {
+  font-size: 16px;
+  color: #a1a1aa;
+  margin-bottom: 16px;
+}
+.cta-email {
+  font-size: 20px;
+  font-weight: 600;
+  color: #818cf8;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="name">Maya Walcher</div>
+    <div class="tagline">I build and ship AI products fast.</div>
+    <div class="chips">
+      <span class="chip">MIT MFin '25</span>
+      <span class="chip">TU Munich CS</span>
+      <span class="chip">Ex–Morgan Stanley Trading</span>
+      <span class="chip">Browser Use Hackathon Winner</span>
+    </div>
+    <div class="links">
+      <a href="https://github.com/beee003">GitHub</a>
+      <a href="https://linkedin.com/in/mayawalcher">LinkedIn</a>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val">4</div><div class="stat-label">Products shipped</div></div>
+    <div class="stat"><div class="stat-val">4 wks</div><div class="stat-label">Build time</div></div>
+    <div class="stat"><div class="stat-val">95K+</div><div class="stat-label">Lines of code</div></div>
+    <div class="stat"><div class="stat-val">6</div><div class="stat-label">Enterprise pilots</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What I Built — March 2026</div>
+
+    <div class="project">
+      <div class="project-header">
+        <div class="project-name">RedSwarm</div>
+        <span class="project-badge badge-oss">Open Source</span>
+      </div>
+      <div class="project-desc">
+        Adversarial AI swarm that attacks your codebase before hackers do. Spawns hundreds of attacker agents simulating supply chain attacks, credential theft, prompt injection. Real-time visualization of agents swarming your code.
+      </div>
+      <div class="project-tech">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">Canvas API</span>
+        <span class="tech-tag">Zero Dependencies</span>
+        <span class="tech-tag">Single File</span>
+      </div>
+      <div class="project-metrics">
+        <span><span class="metric-val">1 file</span> — zero deps</span>
+        <span>Built in <span class="metric-val">1 day</span></span>
+        <span><a href="https://github.com/beee003/redswarm">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <div class="project-name">Axonn</div>
+        <span class="project-badge badge-live">Live</span>
+      </div>
+      <div class="project-desc">
+        Energy regulatory intelligence platform. AI-powered monitoring of 12 EU markets + 7 US ISOs. Real-time BESS revenue calculator, filing alerts with AI enrichment, 21K+ queued projects tracked.
+      </div>
+      <div class="project-tech">
+        <span class="tech-tag">Python / FastAPI</span>
+        <span class="tech-tag">React / TypeScript</span>
+        <span class="tech-tag">AWS EC2</span>
+        <span class="tech-tag">Cloudflare</span>
+        <span class="tech-tag">Gemini 2.0</span>
+      </div>
+      <div class="project-metrics">
+        <span><span class="metric-val">95K</span> lines</span>
+        <span><span class="metric-val">441</span> files</span>
+        <span><span class="metric-val">30+</span> data sources</span>
+        <span>Pilots: Siemens, Statkraft, AES</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <div class="project-name">Anruf.ai</div>
+        <span class="project-badge badge-new">New</span>
+      </div>
+      <div class="project-desc">
+        German AI phone receptionist for SMBs. Natural voice (ElevenLabs), multi-tenant, captures leads, books appointments. Full Twilio voice integration with real-time conversation.
+      </div>
+      <div class="project-tech">
+        <span class="tech-tag">Python / Flask</span>
+        <span class="tech-tag">Twilio Voice</span>
+        <span class="tech-tag">ElevenLabs TTS</span>
+        <span class="tech-tag">GPT-4o</span>
+        <span class="tech-tag">SQLite</span>
+      </div>
+      <div class="project-metrics">
+        <span>Multi-tenant SaaS</span>
+        <span>Built in <span class="metric-val">1 day</span></span>
+        <span>German-first voice AI</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <div class="project-name">SignalsLabs</div>
+        <span class="project-badge badge-live">Live</span>
+      </div>
+      <div class="project-desc">
+        Geopolitical intelligence API. Feeds real-time signal analysis into trading systems. Public API, MCP server, and CLI. Powers the geopolitical signal source for Astrai Alpha.
+      </div>
+      <div class="project-tech">
+        <span class="tech-tag">Cloudflare Workers</span>
+        <span class="tech-tag">D1 Database</span>
+        <span class="tech-tag">MCP Server</span>
+        <span class="tech-tag">Python CLI</span>
+      </div>
+      <div class="project-metrics">
+        <span>Live at <span class="metric-val">signalslabs.net</span></span>
+        <span>API + MCP + CLI shipped</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Background</div>
+    <div class="timeline-item">
+      <div class="timeline-date">2026</div>
+      <div class="timeline-content"><strong>Browser Use Hackathon</strong> — Won Founders Prize. Built AI browser agent at a16z-backed hacker house in SF.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2025–26</div>
+      <div class="timeline-content"><strong>Morgan Stanley</strong> — Credit Trading desk, NYC. Structured products, market making.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2025</div>
+      <div class="timeline-content"><strong>MIT Sloan</strong> — Master of Finance. Computational finance, ML for trading.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2024</div>
+      <div class="timeline-content"><strong>Virtu Financial</strong> — Quantitative trading internship. High-frequency market data analysis.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2023</div>
+      <div class="timeline-content"><strong>TU Munich</strong> — B.Sc. Computer Science. Systems programming, algorithms.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2022</div>
+      <div class="timeline-content"><strong>Deutsche Bank</strong> — Trading intern. Built internal analytics tools.</div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="cta-text">I ship fast, learn faster, and care about craft. Let's talk.</div>
+    <a href="mailto:maya@anruf.ai" class="cta-email">maya@anruf.ai</a>
+  </div>
+
+</div>
+</body>
+</html>
